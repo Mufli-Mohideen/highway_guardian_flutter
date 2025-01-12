@@ -69,6 +69,8 @@ flutter:
 
   assets:
     - assets/images/preloader.gif
+    - assets/images/background.jpeg
+    - assets/images/onboard.jpg
 
 
     
