@@ -6,17 +6,16 @@ class OnboardingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // Dark background color
+      backgroundColor: Colors.black,
       body: Column(
         children: [
-          // Top Half with Image aligned to the left
           Expanded(
             flex: 2,
             child: Center(
               child: Image.asset(
-                'assets/images/onboard.jpg', // Ensure this asset exists
-                width: 360, // Adjust width
-                height: 360, // Adjust height proportionally
+                'assets/images/onboard.jpg',
+                width: 360,
+                height: 360,
                 fit: BoxFit.contain,
               ),
             ),
@@ -38,7 +37,7 @@ class OnboardingPage extends StatelessWidget {
                       color: Colors.white,
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
-                      height: 1.3, // Line height
+                      height: 1.3,
                     ),
                   ),
                   const Text(
@@ -47,7 +46,7 @@ class OnboardingPage extends StatelessWidget {
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      height: 1.3, // Line height
+                      height: 1.3,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -68,16 +67,15 @@ class OnboardingPage extends StatelessWidget {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        // Add any desired functionality here
-                        print("Continue");
+                        // Navigate to the login page using route name
+                        Navigator.pushNamed(context, '/login');
                       },
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        foregroundColor: Colors.black, // Text color
-                        backgroundColor: Colors.white, // Button color
+                        foregroundColor: Colors.black,
+                        backgroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(10), // Rounded corners
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                       child: const Text(
