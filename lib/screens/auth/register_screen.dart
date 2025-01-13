@@ -16,7 +16,6 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _verifyPasswordController =
       TextEditingController();
 
-  // Method to show a Snackbar notification
   void _showNotification(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -28,7 +27,6 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  // Method to validate fields and register
   void _onRegister() async {
     if (_nameController.text.isEmpty ||
         _emailController.text.isEmpty ||
@@ -73,13 +71,21 @@ class _RegisterPageState extends State<RegisterPage> {
       );
 
       if (response.statusCode == 201) {
-        _showNotification("Registration successful!");
+        Navigator.pushReplacementNamed(
+          context,
+          '/verification',
+          arguments: _emailController.text,
+        );
       } else {
-        final error = jsonDecode(response.body)['error'];
-        _showNotification(error ?? 'Something went wrong!');
+        final error = jsonDecode(response.body)['error'] ?? 'Unknown error';
+        _showNotification('Error: $error\nStatus: ${response.statusCode}');
       }
     } catch (e) {
-      _showNotification("Failed to connect to server. Please try again later.");
+      Navigator.pushReplacementNamed(
+        context,
+        '/verification',
+        arguments: _emailController.text,
+      );
     }
   }
 
@@ -91,7 +97,6 @@ class _RegisterPageState extends State<RegisterPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Modern Styled REGISTER Title
             Padding(
               padding: const EdgeInsets.only(top: 60.0),
               child: Center(
@@ -131,7 +136,6 @@ class _RegisterPageState extends State<RegisterPage> {
               fit: BoxFit.contain,
             ),
 
-            // Form for Registration Fields
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Column(
@@ -157,7 +161,6 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 10),
 
-                  // Email Field
                   TextField(
                     controller: _emailController,
                     decoration: InputDecoration(

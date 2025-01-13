@@ -3,6 +3,7 @@ import 'package:highway_guardian/screens/splash_screen.dart';
 import 'package:highway_guardian/screens/onboard.dart';
 import 'package:highway_guardian/screens/auth/login_screen.dart';
 import 'package:highway_guardian/screens/auth/register_screen.dart';
+import 'package:highway_guardian/screens/verification_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: '/splash', // Start from splash screen
+      initialRoute: '/splash',
       onGenerateRoute: (settings) {
         switch (settings.name) {
           case '/splash':
@@ -30,38 +31,33 @@ class MyApp extends StatelessWidget {
             return _createRoute(LoginPage());
           case '/register':
             return _createRoute(RegisterPage());
+          case '/verification':
+            final email = settings.arguments as String;
+            return _createRoute(VerificationPage(email: email));
           default:
-            return null;
+            return _createRoute(SplashScreen());
         }
       },
-      debugShowCheckedModeBanner: false, // Disable the debug banner
+      debugShowCheckedModeBanner: false,
     );
   }
 
-  // Custom Route with Smoother Transition
   Route _createRoute(Widget page) {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => page,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        // Use a smoother curve and adjust the duration for the animation
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;
         const curve = Curves.easeInOut;
 
         var tween =
             Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-        // Duration of the transition (increased for smoother effect)
-        var duration = const Duration(milliseconds: 500);
-
-        // Animation controller driving the transition with smoother timing
         var curvedAnimation = CurvedAnimation(
           parent: animation,
           curve: curve,
           reverseCurve: Curves.easeOut,
         );
 
-        // Return SlideTransition with smoothed out animation
         return SlideTransition(
           position: curvedAnimation.drive(tween),
           child: child,
