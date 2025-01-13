@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:highway_guardian/screens/userdetails_screen.dart';
 
 class VerificationPage extends StatefulWidget {
   final String email;
@@ -19,7 +20,7 @@ class _VerificationPageState extends State<VerificationPage> {
   final TextEditingController _otpController5 = TextEditingController();
 
   late Timer _timer;
-  int _remainingTime = 5 * 60; // 5 minutes
+  int _remainingTime = 15 * 60;
 
   @override
   void initState() {
@@ -89,7 +90,13 @@ class _VerificationPageState extends State<VerificationPage> {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("Email verified successfully!"),
         ));
-        Navigator.pushReplacementNamed(context, '/home');
+        // Navigate to UserDetailsPage
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => UserDetailsPage(email: widget.email),
+          ),
+        );
       } else {
         final error = jsonDecode(response.body)['error'];
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(

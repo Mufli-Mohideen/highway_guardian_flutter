@@ -4,6 +4,7 @@ import 'package:highway_guardian/screens/onboard.dart';
 import 'package:highway_guardian/screens/auth/login_screen.dart';
 import 'package:highway_guardian/screens/auth/register_screen.dart';
 import 'package:highway_guardian/screens/verification_screen.dart';
+import 'package:highway_guardian/screens/userdetails_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -34,6 +35,10 @@ class MyApp extends StatelessWidget {
           case '/verification':
             final email = settings.arguments as String;
             return _createRoute(VerificationPage(email: email));
+          case '/userdetails':
+            final email = settings.arguments as String;
+            return _createRoute(UserDetailsPage(email: email));
+
           default:
             return _createRoute(SplashScreen());
         }

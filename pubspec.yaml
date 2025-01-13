@@ -72,6 +72,7 @@ flutter:
     - assets/images/preloader.gif
     - assets/images/background.jpeg
     - assets/images/onboard.jpg
+    - assets/images/gauge.gif
     - assets/icons/google.svg
 
 

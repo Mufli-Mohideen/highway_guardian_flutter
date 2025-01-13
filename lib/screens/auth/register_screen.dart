@@ -65,8 +65,8 @@ class _RegisterPageState extends State<RegisterPage> {
           'email': _emailController.text,
           'password': _passwordController.text,
           'verifyPassword': _verifyPasswordController.text,
-          'address': 'Sample Address',
-          'phoneNumber': '1234567890',
+          'address': '',
+          'phoneNumber': '',
         }),
       );
 
