@@ -1,7 +1,80 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
+
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
+
+  // Function to handle login
+  Future<void> _handleLogin() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      _showNotification("Please fill in both email and password.");
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://192.168.8.118:5001/api/auth/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email, 'password': password}),
+      );
+
+      if (response.statusCode == 200) {
+        // Save email to shared preferences
+        await _saveEmailToPreferences(email);
+
+        // Navigate to /settingup
+        Navigator.pushReplacementNamed(
+          context,
+          '/settingup',
+          arguments: email,
+        );
+      } else {
+        final error = jsonDecode(response.body)['error'] ?? 'Unknown error';
+        _showNotification('$error');
+      }
+    } catch (e) {
+      _showNotification('Failed to connect to the server. Please try again.');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  // Function to save email to shared preferences
+  Future<void> _saveEmailToPreferences(String email) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('email', email);
+  }
+
+  void _showNotification(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.redAccent,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,12 +86,10 @@ class LoginPage extends StatelessWidget {
           children: [
             // Modern Styled LOGIN Title at the Top
             Padding(
-              padding:
-                  const EdgeInsets.only(top: 60.0), // Adjust vertical padding
+              padding: const EdgeInsets.only(top: 60.0),
               child: Center(
                 child: Stack(
                   children: [
-                    // White Border Text (Layer 1)
                     Text(
                       'LOGIN',
                       style: TextStyle(
@@ -28,17 +99,16 @@ class LoginPage extends StatelessWidget {
                         foreground: Paint()
                           ..style = PaintingStyle.stroke
                           ..strokeWidth = 3
-                          ..color = Colors.white, // White border
+                          ..color = Colors.white,
                       ),
                     ),
-                    // Black Filled Text (Layer 2)
                     Text(
                       'LOGIN',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 40,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 5.0,
-                        color: Colors.black, // Black fill
+                        color: Colors.black,
                       ),
                     ),
                   ],
@@ -51,16 +121,17 @@ class LoginPage extends StatelessWidget {
               'assets/images/onboard.jpg',
               width: 250,
               height: 250,
-              fit: BoxFit.contain, // Keep aspect ratio
+              fit: BoxFit.contain,
             ),
 
-            // Email, Password, and Login Form
+            // Email and Password Form
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Column(
                 children: [
                   // Email Text Field
                   TextField(
+                    controller: _emailController,
                     decoration: InputDecoration(
                       labelText: 'Email',
                       labelStyle: const TextStyle(color: Colors.white),
@@ -69,7 +140,7 @@ class LoginPage extends StatelessWidget {
                       contentPadding: const EdgeInsets.symmetric(
                         vertical: 10.0,
                         horizontal: 12.0,
-                      ), // Adjust vertical padding
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide.none,
@@ -82,6 +153,7 @@ class LoginPage extends StatelessWidget {
 
                   // Password Text Field
                   TextField(
+                    controller: _passwordController,
                     decoration: InputDecoration(
                       labelText: 'Password',
                       labelStyle: const TextStyle(color: Colors.white),
@@ -90,7 +162,7 @@ class LoginPage extends StatelessWidget {
                       contentPadding: const EdgeInsets.symmetric(
                         vertical: 10.0,
                         horizontal: 12.0,
-                      ), // Adjust vertical padding
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide.none,
@@ -105,29 +177,27 @@ class LoginPage extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
-                        // Add your login logic here
-                        print("Login Button Pressed");
-                      },
+                      onPressed: _isLoading ? null : _handleLogin,
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
-                        backgroundColor: Colors.white, // Background color
-                        foregroundColor: Colors.black, // Text color
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      child: const Text(
-                        'LOGIN',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.0,
-                        ),
-                      ),
+                      child: _isLoading
+                          ? const CircularProgressIndicator()
+                          : const Text(
+                              'LOGIN',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.0,
+                              ),
+                            ),
                     ),
                   ),
-
                   const SizedBox(height: 10),
 
                   // OR Divider
@@ -157,7 +227,6 @@ class LoginPage extends StatelessWidget {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 10),
 
                   // Google Login Button
@@ -165,19 +234,17 @@ class LoginPage extends StatelessWidget {
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        // Add your Google login logic here
                         print("Google Login Button Pressed");
                       },
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
-                        backgroundColor: Colors.white, // Background color
-                        foregroundColor: Colors.black, // Text color
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      icon: const Icon(Icons.g_mobiledata,
-                          size: 24), // Google icon
+                      icon: const Icon(Icons.g_mobiledata, size: 24),
                       label: const Text(
                         'Login with Google',
                         style: TextStyle(
@@ -201,8 +268,6 @@ class LoginPage extends StatelessWidget {
                       ),
                       GestureDetector(
                         onTap: () {
-                          // Navigate to the register page
-                          print("Navigate to Register Page");
                           Navigator.pushNamed(context, '/register');
                         },
                         child: const Text(

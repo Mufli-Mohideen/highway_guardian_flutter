@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserDetailsPage extends StatefulWidget {
   final String email;
@@ -16,6 +17,17 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
   final TextEditingController _nicController = TextEditingController();
 
   int _currentStep = 1;
+
+  @override
+  void initState() {
+    super.initState();
+    _saveEmail(widget.email);
+  }
+
+  Future<void> _saveEmail(String email) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('email', email);
+  }
 
   void _onNextStep() async {
     if (_currentStep == 1 && _phoneController.text.isNotEmpty) {
@@ -54,7 +66,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
     if (response.statusCode == 200) {
-      Navigator.pushReplacementNamed(context, '/verification',
+      Navigator.pushReplacementNamed(context, '/settingup',
           arguments: widget.email);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

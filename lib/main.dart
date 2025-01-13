@@ -5,6 +5,8 @@ import 'package:highway_guardian/screens/auth/login_screen.dart';
 import 'package:highway_guardian/screens/auth/register_screen.dart';
 import 'package:highway_guardian/screens/verification_screen.dart';
 import 'package:highway_guardian/screens/userdetails_screen.dart';
+import 'package:highway_guardian/screens/settingup_screen.dart';
+import 'package:highway_guardian/screens/home_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -38,6 +40,10 @@ class MyApp extends StatelessWidget {
           case '/userdetails':
             final email = settings.arguments as String;
             return _createRoute(UserDetailsPage(email: email));
+          case '/settingup':
+            return _createRoute(SettingUpScreen());
+          case '/home':
+            return _createRoute(HomeScreen());
 
           default:
             return _createRoute(SplashScreen());
