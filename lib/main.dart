@@ -7,6 +7,8 @@ import 'package:highway_guardian/screens/verification_screen.dart';
 import 'package:highway_guardian/screens/userdetails_screen.dart';
 import 'package:highway_guardian/screens/settingup_screen.dart';
 import 'package:highway_guardian/screens/home_screen.dart';
+import 'package:highway_guardian/screens/sos_emergency_screen.dart';
+import 'package:highway_guardian/screens/emergency_confirmation_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -44,7 +46,16 @@ class MyApp extends StatelessWidget {
             return _createRoute(SettingUpScreen());
           case '/home':
             return _createRoute(HomeScreen());
-
+          case '/sos-emergency':
+            return _createRoute(SOSEmergencyScreen());
+          case '/emergency-confirmation':
+            final args = settings.arguments as Map<String, dynamic>;
+            return _createRoute(EmergencyConfirmationScreen(
+              emergencyId: args['emergency_id'],
+              emergencyType: args['emergency_type'],
+              servicesDispatched: List<String>.from(args['services_dispatched'] ?? []),
+              estimatedResponseTime: args['estimated_response_time'] ?? 'Unknown',
+            ));
           default:
             return _createRoute(SplashScreen());
         }
@@ -57,23 +68,30 @@ class MyApp extends StatelessWidget {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => page,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(0.0, 1.0);
+        // Slide transition
+        const begin = Offset(0.0, 0.1); // Slight vertical slide
         const end = Offset.zero;
         const curve = Curves.easeInOut;
 
-        var tween =
+        var slideTween =
             Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-        var curvedAnimation = CurvedAnimation(
+        var slideAnimation = animation.drive(slideTween);
+
+        // Fade transition
+        var fadeAnimation = CurvedAnimation(
           parent: animation,
-          curve: curve,
-          reverseCurve: Curves.easeOut,
+          curve: Curves.easeInOut,
         );
 
         return SlideTransition(
-          position: curvedAnimation.drive(tween),
-          child: child,
+          position: slideAnimation,
+          child: FadeTransition(
+            opacity: fadeAnimation,
+            child: child,
+          ),
         );
       },
+      transitionDuration: Duration(milliseconds: 400), // Adjust duration
     );
   }
 }

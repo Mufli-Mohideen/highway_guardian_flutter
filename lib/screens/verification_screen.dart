@@ -81,7 +81,7 @@ class _VerificationPageState extends State<VerificationPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.8.118:5001/api/auth/verify-email'),
+        Uri.parse('http://192.168.8.118:5002/api/auth/verify-email'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': widget.email, 'otp': otp}),
       );
@@ -115,7 +115,7 @@ class _VerificationPageState extends State<VerificationPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.8.118:5001/api/auth/resend-verification'),
+        Uri.parse('http://192.168.8.118:5002/api/auth/resend-verification'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': widget.email}),
       );

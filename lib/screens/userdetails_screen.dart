@@ -52,7 +52,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
   }
 
   Future<void> _submitUserDetails() async {
-    String apiUrl = "http://192.168.8.118:5001/api/auth/update-user";
+    String apiUrl = "http://192.168.8.118:5002/api/auth/update-user";
     final response = await http.post(
       Uri.parse(apiUrl),
       headers: {'Content-Type': 'application/json'},

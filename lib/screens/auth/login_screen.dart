@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../services/user_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -14,6 +15,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _isPasswordVisible = false;
 
   // Function to handle login
   Future<void> _handleLogin() async {
@@ -31,14 +33,19 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.8.118:5001/api/auth/login'),
+        Uri.parse('http://192.168.8.118:5002/api/auth/login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': email, 'password': password}),
       );
 
       if (response.statusCode == 200) {
-        // Save email to shared preferences
-        await _saveEmailToPreferences(email);
+        final userData = jsonDecode(response.body);
+        
+        print('Login successful! Backend response:');
+        print(jsonEncode(userData));
+        
+        // Save complete user data using UserService
+        await UserService.saveUserData(userData);
 
         // Navigate to /settingup
         Navigator.pushReplacementNamed(
@@ -57,12 +64,6 @@ class _LoginPageState extends State<LoginPage> {
         _isLoading = false;
       });
     }
-  }
-
-  // Function to save email to shared preferences
-  Future<void> _saveEmailToPreferences(String email) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('email', email);
   }
 
   void _showNotification(String message) {
@@ -151,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 10),
 
-                  // Password Text Field
+                  // Password Text Field with Eye Icon
                   TextField(
                     controller: _passwordController,
                     decoration: InputDecoration(
@@ -167,8 +168,21 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide.none,
                       ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Colors.white70,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
+                      ),
                     ),
-                    obscureText: true,
+                    obscureText: !_isPasswordVisible,
                     style: const TextStyle(color: Colors.white),
                   ),
                   const SizedBox(height: 10),

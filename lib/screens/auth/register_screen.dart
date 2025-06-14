@@ -16,6 +16,9 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _verifyPasswordController =
       TextEditingController();
 
+  bool _isPasswordVisible = false;
+  bool _isVerifyPasswordVisible = false;
+
   void _showNotification(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -58,7 +61,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.8.118:5001/api/auth/register'),
+        Uri.parse('http://192.168.8.118:5002/api/auth/register'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'name': _nameController.text,
@@ -182,7 +185,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 10),
 
-                  // Password Field
+                  // Password Field with Eye Icon
                   TextField(
                     controller: _passwordController,
                     decoration: InputDecoration(
@@ -198,13 +201,26 @@ class _RegisterPageState extends State<RegisterPage> {
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide.none,
                       ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Colors.white70,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
+                      ),
                     ),
-                    obscureText: true,
+                    obscureText: !_isPasswordVisible,
                     style: const TextStyle(color: Colors.white),
                   ),
                   const SizedBox(height: 10),
 
-                  // Verify Password Field
+                  // Verify Password Field with Eye Icon
                   TextField(
                     controller: _verifyPasswordController,
                     decoration: InputDecoration(
@@ -220,8 +236,21 @@ class _RegisterPageState extends State<RegisterPage> {
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide.none,
                       ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isVerifyPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Colors.white70,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isVerifyPasswordVisible = !_isVerifyPasswordVisible;
+                          });
+                        },
+                      ),
                     ),
-                    obscureText: true,
+                    obscureText: !_isVerifyPasswordVisible,
                     style: const TextStyle(color: Colors.white),
                   ),
                   const SizedBox(height: 20),
